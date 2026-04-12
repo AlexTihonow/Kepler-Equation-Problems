@@ -49,7 +49,6 @@ def rhs_elements(t: float, alpha: np.ndarray) -> np.ndarray:
     # sigma=1 м²/кг, rho кг/м³, v в км/с → перевод в тыс.км/тыс.сек²:
     #   a[м/с²] * 1e-3 → км/с² = тыс.км/тыс.сек²
 
-    #ЁПРСТ если множитель 1e-3 то падает очень медленно
     a_atm = -sigma * rho * (v_rel_norm * 1e3) * v_rel * 1e3  # тыс.км/тыс.сек²
     S, T, W = a_atm
 
