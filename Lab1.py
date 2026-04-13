@@ -49,7 +49,9 @@ def rhs_elements(t: float, alpha: np.ndarray) -> np.ndarray:
     # sigma=1 м²/кг, rho кг/м³, v в км/с → перевод в тыс.км/тыс.сек²:
     #   a[м/с²] * 1e-3 → км/с² = тыс.км/тыс.сек²
 
-    a_atm = -sigma * rho * (v_rel_norm * 1e3) * v_rel * 1e3  # тыс.км/тыс.сек²
+
+    # ПРАВИЛЬНО: СИ → тыс.км/тыс.сек²
+    a_atm = -sigma * rho * (v_rel_norm * 1e3) * (v_rel * 1e3)# тыс.км/тыс.сек²
     S, T, W = a_atm
 
     sq  = np.sqrt(1. - e * e)
@@ -83,7 +85,7 @@ def propagate(r0_tkm: np.ndarray, v0_kms: np.ndarray, t0: datetime) -> dict:
     t_cur  = t0
 
     h_drop = 0.150   # 150 км = 0.150 тыс. км
-    t_max  = 7778.0  # 3 месяца в тыс. сек
+    t_max  = 7776.0  # 3 месяца в тыс. сек
     fell   = False
 
     # Шаг 2: τ = tau = 0.060 тыс. сек (из extra.py)
@@ -96,10 +98,12 @@ def propagate(r0_tkm: np.ndarray, v0_kms: np.ndarray, t0: datetime) -> dict:
 
         # Шаг 5: α_{i+1} → r_{i+1}
         state_new = elems2state(alpha_new)
+        
         r_new     = state_new[:3]
 
         # Шаг 6: высота над эллипсоидом
         _, _, h_tkm = xyz2llh(r_new)
+        
 
         alpha = alpha_new
         t     = t_new
@@ -129,19 +133,16 @@ def propagate(r0_tkm: np.ndarray, v0_kms: np.ndarray, t0: datetime) -> dict:
         "h_km":    h_fin * 1e3,
     }
 
+
+
 #| 20 | Тихонов Александр Романович     |  26513 | 2026-02-18 00:21:57.586 | -6.317170 | -3.616757 |  0.016259 |  1.582410 | -2.705613 | 6.719165 |
 # ===== Начальные условия из п.4 (МКС) =====
+# |  2.972117 |  6.049850 | -0.007805 | -5.041246 |  2.462888 | 5.259396 |
 
-r0 = np.array([-2.17787461,  -6.43542127,   5.55924609e-3])  # тыс. км
-v0 = np.array([ 4.51953616,  -1.51712974,   5.99827094   ])  # км/с
+r0 = np.array([-6.317170,   -3.616757,   0.016259])  # тыс. км
+v0 = np.array([1.582410,  -2.705613,  6.719165   ])  # км/с
 
-t0_dt = datetime(2025, 2, 3, 0, 7, 59, 378000)
-
-#if 0==0 :
-#    r0 = np.array([ -6.317170, -3.616757,   0.016259])  # тыс. км
-#    v0 = np.array([ 1.582410,  -2.705613,   6.719165   ])  # км/с
-#
-#   t0_dt = datetime(2026, 2, 18, 0, 21, 57, 586000)
+t0_dt = datetime(2026, 2, 18, 0, 21, 57, 586000)
 
 result = propagate(r0, v0, t0_dt)
 
