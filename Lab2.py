@@ -214,6 +214,9 @@ def wrap_to_pi(deg_arr):
 def wrap_to_2pi(deg_arr):
     return np.radians(deg_arr) % (2 * np.pi)
 
+def unwrap_rad(deg_arr):
+    return np.unwrap(np.radians(deg_arr))
+
 # [1, 0] ДВУ (в радианах, от -pi до pi)
 axs[1, 0].plot(dates, wrap_to_pi(results_sgp[:, 2]), label=labels[0], color=colors[0])
 axs[1, 0].plot(dates, wrap_to_pi(results_num[:, 2]), label=labels[1], color=colors[1])
@@ -221,10 +224,12 @@ axs[1, 0].plot(dates, wrap_to_pi(results_kp[:, 2]),  label=labels[2], color=colo
 axs[1, 0].set_title('ДВУ, $\Omega$')
 axs[1, 0].set_ylabel('рад')
 
-# [1, 1] Арг. перицентра (в радианах, от 0 до 2pi)
+# [1, 1] Арг. перицентра (в радианах)
+# tle оставляем со скачками как на оригинальной картинке
 axs[1, 1].plot(dates, wrap_to_2pi(results_sgp[:, 3]), label=labels[0], color=colors[0])
-axs[1, 1].plot(dates, wrap_to_2pi(results_num[:, 3]), label=labels[1], color=colors[1])
-axs[1, 1].plot(dates, wrap_to_2pi(results_kp[:, 3]),  label=labels[2], color=colors[2])
+# num и kepler+ сглаживаем, чтобы убрать красные пики-прострелы
+axs[1, 1].plot(dates, unwrap_rad(results_num[:, 3]), label=labels[1], color=colors[1])
+axs[1, 1].plot(dates, unwrap_rad(results_kp[:, 3]),  label=labels[2], color=colors[2])
 axs[1, 1].set_title('Арг. перицентра, $\omega$')
 axs[1, 1].set_ylabel('рад')
 
